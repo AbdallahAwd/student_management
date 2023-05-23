@@ -38,7 +38,6 @@ class _RegisterState extends State<Register> {
   final subjectController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String? governId;
-  List<String> sub = [];
 
   AddressModel? addressModel;
   String currentValue = 'Subjects';
@@ -84,7 +83,7 @@ class _RegisterState extends State<Register> {
               },
               builder: (context, state) {
                 var cubit = LoginCubit.get(context);
-
+                cubit.getSelectedSubjects();
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -135,7 +134,7 @@ class _RegisterState extends State<Register> {
                       validate: (value) {
                         if (value!.isNotEmpty) {
                           if (int.parse(value) > 4) {
-                            return "Enter a valid grade from (1-4)";
+                            return "Enter a valid grade from (1-4) and 0 for doctor";
                           }
                           return null;
                         }
@@ -387,7 +386,7 @@ class _RegisterState extends State<Register> {
                               if (newValue != 'Subjects') {
                                 setState(() {
                                   currentValue = newValue!;
-                                  sub.add(newValue);
+                                  cubit.sub.add(newValue);
                                 });
                               }
                             },
@@ -436,16 +435,16 @@ class _RegisterState extends State<Register> {
                           ),
                         ),
                       ),
-                    if (sub.isNotEmpty) 15.sbh,
-                    if (sub.isNotEmpty)
+                    if (cubit.sub.isNotEmpty) 15.sbh,
+                    if (cubit.sub.isNotEmpty)
                       Wrap(
                         children: List.generate(
-                          sub.length,
+                          cubit.sub.length,
                           (index) => Dismissible(
                             key: UniqueKey(),
                             onDismissed: (direction) {
                               setState(() {
-                                sub.removeAt(index);
+                                cubit.sub.removeAt(index);
                               });
                             },
                             background: Container(
@@ -473,15 +472,15 @@ class _RegisterState extends State<Register> {
                                         shape: BoxShape.circle),
                                     child: Center(
                                       child: Text(
-                                        sub[index].split(' ').first[0] +
-                                            sub[index].split(' ').last[0],
+                                        cubit.sub[index].split(' ').first[0] +
+                                            cubit.sub[index].split(' ').last[0],
                                         style: const TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w600),
                                       ),
                                     ),
                                   ),
-                                  Text(sub[index]),
+                                  Text(cubit.sub[index]),
                                   // const Spacer(),
                                   // IconButton(
                                   //     onPressed: () {

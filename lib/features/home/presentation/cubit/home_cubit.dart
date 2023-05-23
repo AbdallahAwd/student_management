@@ -16,7 +16,7 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeInitial());
   static HomeCubit get(context) => BlocProvider.of(context);
 
-  final userId = Cache.getData(key: CacheKeys.id);
+  final userId = CacheHelper.getData(key: CacheKeys.id);
   NetworkHelper networkHelper = NetworkHelper();
   UserInfoModel? userModel;
   void getUserInfo(String id, String token) async {
@@ -27,13 +27,14 @@ class HomeCubit extends Cubit<HomeState> {
           headers: {'Authorization': 'Bearer $token'});
 
       userModel = UserInfoModel.fromJson(res.data);
-      if (Cache.getData(key: CacheKeys.grade) == null) {
-        Cache.saveData(key: CacheKeys.grade, value: userModel!.user!.grade!);
+      if (CacheHelper.getData(key: CacheKeys.grade) == null) {
+        CacheHelper.saveData(
+            key: CacheKeys.grade, value: userModel!.user!.grade!);
       }
       await getSubjectPdf(userModel!.user!.grade!);
     } on DioError catch (e) {
       log(e.response!.data.toString());
-      log(Cache.getData(key: CacheKeys.token));
+
       emit(GetUserError());
     }
   }
@@ -42,7 +43,7 @@ class HomeCubit extends Cubit<HomeState> {
   getSubjectPdf(int grade) async {
     try {
       final res = await networkHelper
-          .get(path: '/admin/subject?grade', query: {'grade': grade});
+          .get(path: '/admin/subject', query: {'grade': grade});
       pdfModel = PdfModel.fromJson(res.data);
       emit(GetUserSuccess());
     } on DioError catch (e) {
@@ -95,6 +96,47 @@ class HomeCubit extends Cubit<HomeState> {
       emit(UploadPDFSuccess());
     } on DioError catch (e) {
       emit(UploadPDFError(e.response!.data['message']));
+      rethrow;
+    }
+  }
+
+  void updateUserInfo({required String field, required String value}) async {
+    emit(UpdateUserInfoLoading());
+    try {
+      final res =
+          await networkHelper.put(path: '/user/update', data: {field: value});
+
+      emit(UpdateUserInfoSuccess(res.data['message']));
+    } on DioError catch (e) {
+      log(e.response!.data.toString());
+      rethrow;
+    }
+  }
+
+  void updateUserPassword(
+      {required String currentPassword, required String newPassword}) async {
+    emit(UpdateUserInfoLoading());
+    try {
+      final res = await networkHelper.put(path: '/password/update', data: {
+        "old_password": currentPassword,
+        "password": newPassword,
+        "password_confirmation": newPassword
+      });
+
+      emit(UpdateUserInfoSuccess(res.data['message']));
+    } on DioError catch (e) {
+      emit(UpdateUserInfoError(e.response?.data?['error'] ?? 'Unknown Error'));
+      log(e.response!.data.toString());
+      rethrow;
+    }
+  }
+
+  deleteUser(int id) async {
+    try {
+      final res = await networkHelper.delete(path: '/users/delete/$id');
+      emit(DeleteUserSuccess(res.data['message']));
+    } on DioError catch (e) {
+      emit(DeleteUserError(e.response!.data.toString()));
       rethrow;
     }
   }

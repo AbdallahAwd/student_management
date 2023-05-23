@@ -42,3 +42,29 @@ class UploadPDFError extends HomeState {
 
   const UploadPDFError(this.e);
 }
+
+class UpdateUserInfoLoading extends HomeState {}
+
+class UpdateUserInfoError extends HomeState {
+  final String message;
+
+  const UpdateUserInfoError(this.message);
+}
+
+class UpdateUserInfoSuccess extends HomeState {
+  final String message;
+
+  const UpdateUserInfoSuccess(this.message);
+}
+
+class DeleteUserError extends HomeState {
+  final String message;
+
+  const DeleteUserError(this.message);
+}
+
+class DeleteUserSuccess extends HomeState {
+  final String message;
+
+  const DeleteUserSuccess(this.message);
+}
