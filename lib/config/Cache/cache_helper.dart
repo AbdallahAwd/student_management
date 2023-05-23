@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_system/config/resources/cache_keys.dart';
 
-class Cache {
+class CacheHelper {
   static late SharedPreferences sharedPreferences;
   static init() async {
     sharedPreferences = await SharedPreferences.getInstance();

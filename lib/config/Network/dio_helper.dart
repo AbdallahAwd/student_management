@@ -33,7 +33,7 @@ class NetworkHelper extends BaseNetworkHelper {
           contentType: 'application/json',
           headers: {
             'Authorization':
-                'Bearer ${Cache.getData(key: CacheKeys.token) ?? ''}',
+                'Bearer ${CacheHelper.getData(key: CacheKeys.token) ?? ''}',
             "Accept": 'application/json'
           },
           receiveDataWhenStatusError: true,

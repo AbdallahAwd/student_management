@@ -67,6 +67,7 @@ class LoginCubit extends Cubit<LoginState> {
     'IT',
     'IS',
   ];
+  List<String> sub = [];
   Subjects? subjectModel;
 
   getSubjectWhenGrade(String grade) async {
@@ -109,17 +110,31 @@ class LoginCubit extends Cubit<LoginState> {
         // "depart":""
         "password_confirmation": password,
         "address": address.toJson(),
-        "subjects": subjectModel!.toJson()['result']
+        "subjects": testSub!.map((e) => e.toJson()).toList()
       });
 
-      Cache.saveData(key: CacheKeys.token, value: res.data['access_token']);
-      Cache.saveData(key: CacheKeys.id, value: res.data['user']['id']);
+      CacheHelper.saveData(
+          key: CacheKeys.token, value: res.data['access_token']);
+      CacheHelper.saveData(key: CacheKeys.id, value: res.data['user']['id']);
       emit(RegisterSuccess(res.data['access_token']));
     } on DioError catch (e) {
       emit(RegisterError(e.response!.data['message']));
 
       rethrow;
     }
+  }
+
+  List<Subject>? testSub = [];
+  getSelectedSubjects() {
+    testSub?.clear();
+
+    for (String subject in sub) {
+      testSub!.addAll(subjectModel!.result!
+          .where((element) => element.subjectName!.contains(subject))
+          .toList());
+    }
+
+    print(testSub!.map((e) => e.toJson()).toList());
   }
 
   login({
@@ -134,8 +149,9 @@ class LoginCubit extends Cubit<LoginState> {
           'password': password,
         });
 
-        Cache.saveData(key: CacheKeys.token, value: res.data['access_token']);
-        Cache.saveData(key: CacheKeys.id, value: res.data['user']['id']);
+        CacheHelper.saveData(
+            key: CacheKeys.token, value: res.data['access_token']);
+        CacheHelper.saveData(key: CacheKeys.id, value: res.data['user']['id']);
         emit(RegisterSuccess(res.data['access_token']));
         return;
       }
@@ -143,11 +159,12 @@ class LoginCubit extends Cubit<LoginState> {
         'phone': emailOrPhone,
         'password': password,
       });
-      Cache.saveData(key: CacheKeys.token, value: res.data['access_token']);
-      Cache.saveData(key: CacheKeys.id, value: res.data['user']['id']);
+      CacheHelper.saveData(
+          key: CacheKeys.token, value: res.data['access_token']);
+      CacheHelper.saveData(key: CacheKeys.id, value: res.data['user']['id']);
       emit(RegisterSuccess(res.data['access_token']));
     } on DioError catch (e) {
-      emit(RegisterError(e.response?.data.toString()));
+      emit(RegisterError(e.response?.data['error']));
       rethrow;
     }
   }
@@ -159,8 +176,8 @@ class LoginCubit extends Cubit<LoginState> {
       _networkHelper.post(
           path: '/logout',
           headers: {'Authorization': 'Bearer $token'}).then((value) {
-        Cache.removeData(CacheKeys.token);
-        Cache.removeData(CacheKeys.id);
+        CacheHelper.removeData(CacheKeys.token);
+        CacheHelper.removeData(CacheKeys.id);
         C.navToRemove(context, const Login());
       });
     } on DioError catch (e) {

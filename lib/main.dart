@@ -13,9 +13,9 @@ import 'features/login/presentation/pages/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Cache.init();
-  final token = Cache.getData(key: CacheKeys.token);
-  final id = Cache.getData(key: CacheKeys.id) ?? 0;
+  await CacheHelper.init();
+  final token = CacheHelper.getData(key: CacheKeys.token);
+  final id = CacheHelper.getData(key: CacheKeys.id) ?? 0;
   Bloc.observer = MyBlocObserver();
   runApp(MyApp(
     token: token,
