@@ -112,6 +112,7 @@ class _UpdateState extends State<Update> {
                           HomeCubit.get(context).updateUserInfo(
                               field: widget.index == 0 ? 'name' : 'email',
                               value: activeController.text.trim());
+                          return;
                         }
                         HomeCubit.get(context).updateUserPassword(
                             currentPassword: oldPassController.text.trim(),
