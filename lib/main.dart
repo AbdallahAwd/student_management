@@ -8,6 +8,7 @@ import 'package:student_system/features/login/presentation/cubit/login_cubit.dar
 
 import 'bloc_observer.dart';
 import 'config/Cache/cache_helper.dart';
+import 'features/admin/home/homeAdmin.dart';
 import 'features/login/presentation/pages/login.dart';
 
 void main() async {
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
         title: 'Student',
         debugShowCheckedModeBanner: false,
         theme: AppStyles.lightThemeData,
-        home: token == null ? const Login() : Home(token: token),
+        home: HomeAdminScreen()
+        // token == null ? const Login() : Home(token: token),
       ),
     );
   }
