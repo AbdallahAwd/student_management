@@ -15,7 +15,6 @@ import '../../../../config/utils/def_button.dart';
 import '../../../../config/utils/text_field.dart';
 import '../cubit/login_cubit.dart';
 import '../cubit/login_state.dart';
-import '../widgets/arrow.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -38,7 +37,7 @@ class _LoginState extends State<Login> {
         if (state is RegisterError) {
           C.snack(
             context,
-            state.error,
+            state.error ?? 'Unknown Error',
             onTap: () {
               emailController.clear();
               passwordController.clear();
@@ -46,15 +45,17 @@ class _LoginState extends State<Login> {
           );
         }
         if (state is RegisterSuccess) {
-          C.navToRemove(context, const Home());
+          C.navToRemove(
+              context,
+              Home(
+                token: state.token,
+              ));
         }
       },
       builder: (context, state) {
         var cubit = LoginCubit.get(context);
         return Scaffold(
-          appBar: AppBar(
-            leading: const ArrowBack(),
-          ),
+          appBar: AppBar(),
           body: Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20, top: 20),
             child: Form(

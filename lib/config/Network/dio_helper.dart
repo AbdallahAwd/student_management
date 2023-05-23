@@ -32,7 +32,8 @@ class NetworkHelper extends BaseNetworkHelper {
           baseUrl: "http://${Constant.baseUrl}:${Constant.basePort}/api",
           contentType: 'application/json',
           headers: {
-            'Authorization': Cache.getData(key: CacheKeys.token) ?? '',
+            'Authorization':
+                'Bearer ${Cache.getData(key: CacheKeys.token) ?? ''}',
             "Accept": 'application/json'
           },
           receiveDataWhenStatusError: true,
@@ -50,17 +51,21 @@ class NetworkHelper extends BaseNetworkHelper {
   @override
   Future<Response> get(
       {required String path,
-      Map<String, dynamic>? data,
+      dynamic data,
+      Map<String, dynamic>? headers,
       Map<String, dynamic>? query}) async {
-    return await _dio.get(path, data: data, queryParameters: query);
+    return await _dio.get(path,
+        data: data, queryParameters: query, options: Options(headers: headers));
   }
 
   @override
   Future<Response> post(
       {required String path,
-      Map<String, dynamic>? data,
-      Map<String, dynamic>? query}) async {
-    return await _dio.post(path, data: data, queryParameters: query);
+      dynamic data,
+      Map<String, dynamic>? query,
+      Map<String, dynamic>? headers}) async {
+    return await _dio.post(path,
+        data: data, queryParameters: query, options: Options(headers: headers));
   }
 
   @override

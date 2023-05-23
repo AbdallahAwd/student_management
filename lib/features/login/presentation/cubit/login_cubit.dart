@@ -6,10 +6,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:student_system/config/Network/dio_helper.dart';
 import 'package:student_system/config/resources/cache_keys.dart';
+import 'package:student_system/features/home/presentation/cubit/home_cubit.dart';
 
 import '../../../../config/Cache/cache_helper.dart';
+import '../../../../config/utils/components.dart';
 import '../../models/address.dart';
 import '../../models/subjects.dart';
+import '../pages/login.dart';
 import 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
@@ -58,6 +61,12 @@ class LoginCubit extends Cubit<LoginState> {
     'Admin',
     'Student',
   ];
+  List<String> depart = [
+    'Department',
+    'CS',
+    'IT',
+    'IS',
+  ];
   Subjects? subjectModel;
 
   getSubjectWhenGrade(String grade) async {
@@ -104,11 +113,11 @@ class LoginCubit extends Cubit<LoginState> {
       });
 
       Cache.saveData(key: CacheKeys.token, value: res.data['access_token']);
-      Cache.saveData(key: CacheKeys.role, value: role);
-      emit(RegisterSuccess());
+      Cache.saveData(key: CacheKeys.id, value: res.data['user']['id']);
+      emit(RegisterSuccess(res.data['access_token']));
     } on DioError catch (e) {
-      emit(RegisterError(e.response!.data.toString()));
-      log(e.response!.data!);
+      emit(RegisterError(e.response!.data['message']));
+
       rethrow;
     }
   }
@@ -126,8 +135,8 @@ class LoginCubit extends Cubit<LoginState> {
         });
 
         Cache.saveData(key: CacheKeys.token, value: res.data['access_token']);
-        Cache.saveData(key: CacheKeys.role, value: res.data['user']['role']);
-        emit(RegisterSuccess());
+        Cache.saveData(key: CacheKeys.id, value: res.data['user']['id']);
+        emit(RegisterSuccess(res.data['access_token']));
         return;
       }
       final res = await _networkHelper.post(path: '/login', data: {
@@ -135,11 +144,27 @@ class LoginCubit extends Cubit<LoginState> {
         'password': password,
       });
       Cache.saveData(key: CacheKeys.token, value: res.data['access_token']);
-      Cache.saveData(key: CacheKeys.role, value: res.data['user']['role']);
-      emit(RegisterSuccess());
+      Cache.saveData(key: CacheKeys.id, value: res.data['user']['id']);
+      emit(RegisterSuccess(res.data['access_token']));
     } on DioError catch (e) {
-      emit(RegisterError(e.response!.data.toString()));
+      emit(RegisterError(e.response?.data.toString()));
       rethrow;
+    }
+  }
+
+  logout(context, String token) {
+    try {
+      HomeCubit.get(context).userModel = null;
+      HomeCubit.get(context).pdfModel = null;
+      _networkHelper.post(
+          path: '/logout',
+          headers: {'Authorization': 'Bearer $token'}).then((value) {
+        Cache.removeData(CacheKeys.token);
+        Cache.removeData(CacheKeys.id);
+        C.navToRemove(context, const Login());
+      });
+    } on DioError catch (e) {
+      log(e.toString());
     }
   }
 }

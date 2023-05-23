@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 
 class C {
@@ -56,5 +57,14 @@ class C {
         ),
       ),
     );
+  }
+
+  static toast(
+    String message, {
+    ToastGravity? gravity,
+    Toast? toastLength,
+  }) {
+    Fluttertoast.showToast(
+        msg: message, gravity: gravity, toastLength: toastLength);
   }
 }

@@ -49,6 +49,16 @@ extension AssetPath on String {
     if (isTshirt || isHoodie) return 'front';
     return 'default';
   }
+
+  String get firstLetters {
+    return split(' ').map((e) => e[0]).join();
+    // .first[0] + split(' ').last[0]
+  }
+
+  String get convertDateToString {
+    DateTime dateTime = DateTime.parse(this);
+    return DateFormat('d MMM').format(dateTime);
+  }
 }
 
 extension Date on DateTime {

@@ -43,6 +43,7 @@ class _RegisterState extends State<Register> {
   AddressModel? addressModel;
   String currentValue = 'Subjects';
   String currentValue2 = 'Role';
+  String currentValue3 = 'Department';
   RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
   @override
@@ -66,7 +67,7 @@ class _RegisterState extends State<Register> {
                 if (state is RegisterError) {
                   C.snack(
                     context,
-                    state.error,
+                    state.error ?? ' Unknown Error',
                     onTap: () {
                       emailController.clear();
                       phoneController.clear();
@@ -74,7 +75,11 @@ class _RegisterState extends State<Register> {
                   );
                 }
                 if (state is RegisterSuccess) {
-                  C.navToRemove(context, const Home());
+                  C.navToRemove(
+                      context,
+                      Home(
+                        token: state.token,
+                      ));
                 }
               },
               builder: (context, state) {
@@ -215,8 +220,13 @@ class _RegisterState extends State<Register> {
                           width: context.sw(0.4),
                           child: DefTextField(
                             hintText: 'City',
+                            isEnabled: governController.text.isNotEmpty,
                             onTap: () {
-                              showListCityModel(context);
+                              if (governController.text.isNotEmpty) {
+                                showListCityModel(context);
+                              } else {
+                                C.snack(context, 'Please Choose A Governorate');
+                              }
                             },
                             prefexicon: const Icon(Icons.location_city),
                             controller: cityController,
@@ -281,6 +291,67 @@ class _RegisterState extends State<Register> {
                                           value,
                                           style: TextStyle(
                                               color: value == 'Role'
+                                                  ? Colors.grey
+                                                  : Colors.black),
+                                        ),
+                                        const Spacer(),
+                                        // IconButton(
+                                        //     onPressed: () {
+
+                                        //     },
+                                        //     icon: const Icon(Icons.check))
+                                      ],
+                                    ).paddingSymmetric(10, 0),
+                                  ));
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    10.sbh,
+                    if (currentValue2 == 'Student')
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 1),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: currentValue3,
+                            onChanged: (String? newValue) {
+                              if (newValue != 'Department') {
+                                setState(() {
+                                  currentValue3 = newValue!;
+                                });
+                              }
+                            },
+                            items: cubit.depart
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: SizedBox(
+                                    width: 300,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                              color: C.getRandomColor(),
+                                              shape: BoxShape.circle),
+                                          child: Center(
+                                            child: Text(
+                                              value.firstLetters,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ),
+                                        ),
+                                        10.sbw,
+                                        Text(
+                                          value,
+                                          style: TextStyle(
+                                              color: value == 'Department'
                                                   ? Colors.grey
                                                   : Colors.black),
                                         ),

@@ -19,10 +19,14 @@ class GetSubjectError extends LoginState {}
 
 class RegisterLoading extends LoginState {}
 
-class RegisterSuccess extends LoginState {}
+class RegisterSuccess extends LoginState {
+  final String token;
+
+  const RegisterSuccess(this.token);
+}
 
 class RegisterError extends LoginState {
-  final String error;
+  final String? error;
 
   const RegisterError(this.error);
 }

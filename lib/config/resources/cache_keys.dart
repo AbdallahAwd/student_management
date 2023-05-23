@@ -1,1 +1,1 @@
-enum CacheKeys { token, role }
+enum CacheKeys { token, id, grade }
